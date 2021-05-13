@@ -16,7 +16,7 @@ def main():
         all_deps += extras[group_name]
     extras['all'] = all_deps
 
-    base_libs = ['neptune-client>=0.9.7', 'sacred']
+    base_libs = ['neptune-client>=0.9.7', 'sacred', 'flatten-dict']
 
     version = None
     if os.path.exists('PKG-INFO'):

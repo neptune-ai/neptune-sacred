@@ -19,6 +19,9 @@ import warnings
 from sacred.dependencies import get_digest
 from sacred.observers import RunObserver
 
+from neptune_sacred import __version__
+from neptune_sacred.impl.utils import custom_flatten_dict
+
 try:
     # neptune-client=0.9.0 package structure
     import neptune.new as neptune
@@ -27,11 +30,6 @@ except ImportError:
     # neptune-client=1.0.0 package structure
     import neptune
     from neptune.internal.utils import verify_type
-
-
-def _flatten_dict(d):
-    """tmp dummy function"""
-    return d
 
 
 class NeptuneObserver(RunObserver):
@@ -90,14 +88,15 @@ class NeptuneObserver(RunObserver):
         self.base_namespace = base_namespace
         self.resources = {}
 
-    def started_event(self, ex_info, command, host_info, start_time, config, meta_info, _id):
+        self.run['source_code/integrations/neptune-sacred'] = __version__
 
+    def started_event(self, ex_info, command, host_info, start_time, config, meta_info, _id):
         self.run['sys/name'] = ex_info['name']
-        self.run[self.base_namespace]['config'] = _flatten_dict(config)
+        self.run[self.base_namespace]['config'] = custom_flatten_dict(config)
         self.run[self.base_namespace]['sacred_config/sacred_id'] = _id
         self.run[self.base_namespace]['sacred_config/host_info'] = host_info
-        self.run[self.base_namespace]['sacred_config/meta_info'] = _flatten_dict(meta_info)
-        self.run[self.base_namespace]['sacred_config/experiment_info'] = _flatten_dict(ex_info)
+        self.run[self.base_namespace]['sacred_config/meta_info'] = custom_flatten_dict(meta_info)
+        self.run[self.base_namespace]['sacred_config/experiment_info'] = custom_flatten_dict(ex_info)
 
     def completed_event(self, stop_time, result: dict):
         if result:
