@@ -34,99 +34,102 @@ except ImportError:
 
 class NeptuneObserver(RunObserver):
     """Logs sacred experiment data to Neptune.
+
     Sacred observer that logs experiment metadata to neptune.
     The experiment data can be accessed and shared via web UI or experiment API.
-    Check Neptune docs for more information https://docs.neptune.ai.
+
     Args:
-        run(obj): Neptune run
-        base_namespace(str): The namespace to save all metadata from sacred
+        run(Run): Neptune _run.
+        base_namespace(str): The namespace to save all metadata from sacred.
 
     Examples:
-        Create sacred experiment::
-            from numpy.random import permutation
-            from sklearn import svm, datasets
-            from sacred import Experiment
-            ex = Experiment('iris_rbf_svm')
-        Add Neptune observer::
-            from neptunecontrib.monitoring.sacred import NeptuneObserver
-            ex.observers.append(NeptuneObserver(api_token='YOUR_LONG_API_TOKEN',
-                                                project_name='USER_NAME/PROJECT_NAME'))
-        Run experiment::
-            @ex.config
-            def cfg():
-                C = 1.0
-                gamma = 0.7
+        Create sacred experiment:
 
-            @ex.automain
-            def run(C, gamma, _run):
-                iris = datasets.load_iris()
-                per = permutation(iris.target.size)
-                iris.data = iris.data[per]
-                iris.target = iris.target[per]
-                clf = svm.SVC(C, 'rbf', gamma=gamma)
-                clf.fit(iris.data[:90],
-                        iris.target[:90])
-                return clf.score(iris.data[90:],
-                                 iris.target[90:])
+        >>> from numpy.random import permutation
+        >>> from sklearn import svm, datasets
+        >>> from sacred import Experiment
+        >>> ex = Experiment('iris_rbf_svm')
 
-        Go to the app and see the experiment. For example, https://app.neptune.ai/prince.canuma/sacred-integration/e/SAC-59/all
+        Add Neptune observer:
+
+        >>> from neptunecontrib.monitoring.sacred import NeptuneObserver
+        >>> ex.observers.append(NeptuneObserver(api_token='YOUR_LONG_API_TOKEN',
+        ...                                     project_name='USER_NAME/PROJECT_NAME'))
+
+        Run experiment:
+
+        >>> @ex.config
+        ... def cfg():
+        ...     C = 1.0
+        ...     gamma = 0.7
+
+        >>> @ex.automain
+        ... def _run(C, gamma, _run):
+        ...     iris = datasets.load_iris()
+        ...     per = permutation(iris.target.size)
+        ...     iris.data = iris.data[per]
+        ...     iris.target = iris.target[per]
+        ...     clf = svm.SVC(C, 'rbf', gamma=gamma)
+        ...     clf.fit(iris.data[:90],
+        ...             iris.target[:90])
+        ...     return clf.score(iris.data[90:],
+        ...                      iris.target[90:])
+
+
+    You may also want to check `sacred integration docs page` and `example experiment page`_.
+
+    .. _sacred integration docs page:
+        https://docs.neptune.ai/integrations-and-supported-tools/model-training/sacred
+    .. _example experiment page:
+        https://app.neptune.ai/prince.canuma/sacred-integration/e/SAC-59/all
     """
 
     def __init__(self, run, base_namespace='experiment'):
         super(NeptuneObserver, self).__init__()
-        if run:
-            self.run = run
-        else:
-            print("""
-            Please initialize and pass the run as a param to the constructor.
-             i.e 
-             run = neptune.init(project=project_name)
-             ex.observers.append(NeptuneObserver(
-                  run=run))
-             """)
+        self._run = run
 
         self.base_namespace = base_namespace
         self.resources = {}
 
-        self.run['source_code/integrations/neptune-sacred'] = __version__
+        self._run['source_code/integrations/neptune-sacred'] = __version__
 
     def started_event(self, ex_info, command, host_info, start_time, config, meta_info, _id):
-        self.run['sys/name'] = ex_info['name']
-        self.run[self.base_namespace]['config'] = custom_flatten_dict(config)
-        self.run[self.base_namespace]['sacred_config/sacred_id'] = _id
-        self.run[self.base_namespace]['sacred_config/host_info'] = host_info
-        self.run[self.base_namespace]['sacred_config/meta_info'] = custom_flatten_dict(meta_info)
-        self.run[self.base_namespace]['sacred_config/experiment_info'] = custom_flatten_dict(ex_info)
+        self._run['sys/name'] = ex_info['name']
+        self._run[self.base_namespace]['config'] = custom_flatten_dict(config)
+        self._run[self.base_namespace]['sacred_config/sacred_id'] = _id
+        self._run[self.base_namespace]['sacred_config/host_info'] = host_info
+        self._run[self.base_namespace]['sacred_config/meta_info'] = custom_flatten_dict(meta_info)
+        self._run[self.base_namespace]['sacred_config/experiment_info'] = custom_flatten_dict(ex_info)
 
     def completed_event(self, stop_time, result: dict):
         if result:
             for i, (k, v) in enumerate(result.items()):
                 if isinstance(v, str):
-                    self.run[self.base_namespace][f'logs/metrics/results/{k}'] = v
+                    self._run[self.base_namespace][f'logs/metrics/results/{k}'] = v
                 elif isinstance(v, int) or isinstance(v, float):
-                    self.run[self.base_namespace][f'logs/metrics/results/{k}'] = float(v)
+                    self._run[self.base_namespace][f'logs/metrics/results/{k}'] = float(v)
                 elif isinstance(v, object):
-                    self.run[self.base_namespace][f'logs/metrics/results/{k}'].upload(v)
+                    self._run[self.base_namespace][f'logs/metrics/results/{k}'].upload(v)
                 else:
                     warnings.warn(
-                        "logging results does not support type '{}' results. Ignoring this result".format(type(v)))
+                        f"Logging results does not support type '{type(v)}' results. Ignoring this result")
 
     def interrupted_event(self, interrupt_time, status):
-        """TODO: comment"""
+        pass
 
     def failed_event(self, fail_time, fail_trace):
-        """TODO: comment"""
+        pass
 
     def artifact_event(self, name, filename, metadata=None, content_type=None):
         filename = filename.rsplit('/', 1)[-1]
-        self.run[self.base_namespace][f'io_files/artifacts/{filename}'].upload(name)
+        self._run[self.base_namespace][f'io_files/artifacts/{filename}'].upload(name)
 
     def resource_event(self, filename):
         if filename not in self.resources:
             md5 = get_digest(filename)
             self.resources[filename] = md5
 
-        self.run[self.base_namespace]['io_files/resources'] = list(self.resources.items())
+        self._run[self.base_namespace]['io_files/resources'] = list(self.resources.items())
 
     def log_metrics(self, metrics_by_name, info):
         for metric_name, metric_ptr in metrics_by_name.items():
@@ -134,5 +137,5 @@ class NeptuneObserver(RunObserver):
                     metric_ptr["steps"],
                     metric_ptr["values"],
                     metric_ptr['timestamps']):
-                self.run[self.base_namespace][f'logs/metrics/{metric_name}'].log(step=int(step), value=value,
-                                                                                 timestamp=timestamp.timestamp())
+                self._run[self.base_namespace][f'logs/metrics/{metric_name}'].log(step=int(step), value=value,
+                                                                                  timestamp=timestamp.timestamp())
