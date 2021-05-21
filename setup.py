@@ -16,7 +16,7 @@ def main():
         all_deps += extras[group_name]
     extras['all'] = all_deps
 
-    base_libs = ['neptune-client>=0.9.7', 'sacred', 'flatten-dict']
+    base_libs = ['neptune-client>=0.9.10', 'sacred', 'flatten-dict']
 
     version = None
     if os.path.exists('PKG-INFO'):
@@ -35,7 +35,13 @@ def main():
         author='neptune.ai',
         support='contact@neptune.ai',
         author_email='contact@neptune.ai',
-        url="https://github.com/neptune-ai/neptune-sacred",
+        # package url management: https://stackoverflow.com/a/56243786/1565454
+        url="https://neptune.ai/",
+        project_urls={
+            'Tracker': 'https://github.com/neptune-ai/neptune-sacred/issues',
+            'Source': 'https://github.com/neptune-ai/neptune-sacred',
+            'Documentation': 'https://docs.neptune.ai/integrations-and-supported-tools/model-training/sacred',
+        },
         long_description=readme,
         long_description_content_type="text/markdown",
         license='Apache License 2.0',

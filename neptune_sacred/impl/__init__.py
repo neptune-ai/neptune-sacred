@@ -31,6 +31,8 @@ except ImportError:
     import neptune
     from neptune.internal.utils import verify_type
 
+INTEGRATION_VERSION_KEY = 'source_code/integrations/neptune-sacred'
+
 
 class NeptuneObserver(RunObserver):
     """Logs sacred experiment data to Neptune.
@@ -91,7 +93,7 @@ class NeptuneObserver(RunObserver):
         self.base_namespace = base_namespace
         self.resources = {}
 
-        self._run['source_code/integrations/neptune-sacred'] = __version__
+        self._run[INTEGRATION_VERSION_KEY] = __version__
 
     def started_event(self, ex_info, command, host_info, start_time, config, meta_info, _id):
         self._run['sys/name'] = ex_info['name']
