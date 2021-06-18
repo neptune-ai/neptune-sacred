@@ -107,11 +107,11 @@ class NeptuneObserver(RunObserver):
         if result:
             for i, (k, v) in enumerate(result.items()):
                 if isinstance(v, str):
-                    self._run[self.base_namespace][f'logs/metrics/results/{k}'] = v
+                    self._run[self.base_namespace][f'metrics/results/{k}'] = v
                 elif isinstance(v, int) or isinstance(v, float):
-                    self._run[self.base_namespace][f'logs/metrics/results/{k}'] = float(v)
+                    self._run[self.base_namespace][f'metrics/results/{k}'] = float(v)
                 elif isinstance(v, object):
-                    self._run[self.base_namespace][f'logs/metrics/results/{k}'].upload(v)
+                    self._run[self.base_namespace][f'metrics/results/{k}'].upload(v)
                 else:
                     warnings.warn(
                         f"Logging results does not support type '{type(v)}' results. Ignoring this result")
@@ -139,5 +139,5 @@ class NeptuneObserver(RunObserver):
                     metric_ptr["steps"],
                     metric_ptr["values"],
                     metric_ptr['timestamps']):
-                self._run[self.base_namespace][f'logs/metrics/{metric_name}'].log(step=int(step), value=value,
+                self._run[self.base_namespace][f'metrics/{metric_name}'].log(step=int(step), value=value,
                                                                                   timestamp=timestamp.timestamp())
