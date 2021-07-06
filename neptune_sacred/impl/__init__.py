@@ -23,13 +23,15 @@ from neptune_sacred import __version__
 from neptune_sacred.impl.utils import custom_flatten_dict
 
 try:
-    # neptune-client=0.9.0 package structure
+    # neptune-client=0.9.0+ package structure
     import neptune.new as neptune
     from neptune.new.internal.utils import verify_type
+    from neptune.new.internal.utils.compatibility import expect_not_an_experiment
 except ImportError:
-    # neptune-client=1.0.0 package structure
+    # neptune-client>=1.0.0 package structure
     import neptune
     from neptune.internal.utils import verify_type
+    from neptune.internal.utils.compatibility import expect_not_an_experiment
 
 INTEGRATION_VERSION_KEY = 'source_code/integrations/neptune-sacred'
 
@@ -88,6 +90,7 @@ class NeptuneObserver(RunObserver):
 
     def __init__(self, run, base_namespace='experiment'):
         super(NeptuneObserver, self).__init__()
+        expect_not_an_experiment(run)
         self._run = run
 
         self.base_namespace = base_namespace
