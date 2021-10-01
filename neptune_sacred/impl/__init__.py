@@ -16,6 +16,7 @@
 
 import warnings
 import os
+import json
 
 from sacred.dependencies import get_digest
 from sacred.observers import RunObserver
@@ -114,6 +115,8 @@ class NeptuneObserver(RunObserver):
                     self._run[self.base_namespace][f'metrics/results/{k}'] = v
                 elif isinstance(v, int) or isinstance(v, float):
                     self._run[self.base_namespace][f'metrics/results/{k}'] = float(v)
+                elif isinstance(v, list) or isinstance(v, dict):
+                    self._run[self.base_namespace][f'metrics/results/{k}'] = json.dumps(v)
                 elif isinstance(v, object):
                     self._run[self.base_namespace][f'metrics/results/{k}'].upload(v)
                 else:
