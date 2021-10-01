@@ -15,6 +15,7 @@
 #
 
 import warnings
+import os
 
 from sacred.dependencies import get_digest
 from sacred.observers import RunObserver
@@ -126,7 +127,7 @@ class NeptuneObserver(RunObserver):
         pass
 
     def artifact_event(self, name, filename, metadata=None, content_type=None):
-        filename = filename.rsplit('/', 1)[-1]
+        filename = os.path.split(filename)[-1]
         self._run[self.base_namespace][f'io_files/artifacts/{filename}'].upload(name)
 
     def resource_event(self, filename):
