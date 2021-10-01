@@ -127,7 +127,7 @@ class NeptuneObserver(RunObserver):
 
     def artifact_event(self, name, filename, metadata=None, content_type=None):
         filename = filename.rsplit('/', 1)[-1]
-        self._run[self.base_namespace][f'io_files/artifacts/{filename}'].upload(name)
+        self._run[self.base_namespace][f'io_files/artifacts/{name}'].upload(filename)
 
     def resource_event(self, filename):
         if filename not in self.resources:
