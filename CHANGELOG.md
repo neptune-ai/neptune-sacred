@@ -1,4 +1,4 @@
-## neptune-sacred 0.9.7 [UNRELEASED]
+## neptune-sacred 0.9.7
 
 ### Fixes
 - Corrected filename parsing for artifacts when running on Windows ([#9](https://github.com/neptune-ai/neptune-sacred/pull/9))
