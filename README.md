@@ -28,6 +28,29 @@ Neptune is a tool used for experiment tracking, model registry, data versioning,
 * [Example dashboard in the Neptune app](https://app.neptune.ai/o/common/org/sacred-integration/e/SAC-11/dashboard/Sacred-Dashboard-6741ab33-825c-4b25-8ebb-bb95c11ca3f4)
 * [Run example in Google Colab](https://colab.research.google.com/github/neptune-ai/examples/blob/main/integrations-and-supported-tools/sacred/notebooks/Neptune_Sacred.ipynb)
 
+## Example
+
+```python
+# On the command line:
+pip install neptune-client[sacred] sacred torch torchvision
+```
+```python
+# In Python:
+import neptune.new as neptune
+
+
+# Start a run
+run = neptune.init(project = "common/sacred-integration",
+                   api_token = "ANONYMOUS")
+
+# Create a sacred experiment
+experiment = Experiment("image_classification", interactive=True)
+
+# Add NeptuneObserver and run the experiment
+experiment.observers.append(NeptuneObserver(run=neptune_run))
+experiment.run()
+```
+
 ## Support
 
 If you got stuck or simply want to talk to us, here are your options:
