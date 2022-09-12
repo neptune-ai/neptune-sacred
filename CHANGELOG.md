@@ -1,3 +1,8 @@
+## neptune-sacred 0.10.0
+
+### Changes
+- Changed integrations utils to be imported from non-internal package ([#12](https://github.com/neptune-ai/neptune-sacred/pull/12))
+
 ## neptune-sacred 0.9.7
 
 ### Fixes
