@@ -1,3 +1,8 @@
+## [UNRELEASED] neptune-sacred 0.10.1
+
+### Changes
+- Moved `neptune_sacred` package to `src` directory ([#14](https://github.com/neptune-ai/neptune-sacred/pull/14))
+
 ## neptune-sacred 0.10.0
 
 ### Changes

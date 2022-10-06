@@ -47,7 +47,7 @@ def main():
         license="Apache License 2.0",
         install_requires=base_libs,
         extras_require=extras,
-        packages=find_packages(),
+        packages=find_packages(where="src"),
         cmdclass=versioneer.get_cmdclass(),
         zip_safe=False,
         classifiers=[
@@ -73,6 +73,7 @@ def main():
             "Topic :: Scientific/Engineering :: Artificial Intelligence",
         ],
         keywords=["MLOps", "ML Experiment Tracking", "ML Model Registry", "ML Model Store", "ML Metadata Store"],
+        package_dir={"": "src"},
     )
 
 
