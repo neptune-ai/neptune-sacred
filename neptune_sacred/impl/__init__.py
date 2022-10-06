@@ -14,9 +14,9 @@
 # limitations under the License.
 #
 
-import warnings
-import os
 import json
+import os
+import warnings
 
 from sacred.dependencies import get_digest
 from sacred.observers import RunObserver
@@ -27,13 +27,13 @@ from neptune_sacred.impl.utils import custom_flatten_dict
 try:
     # neptune-client=0.9.0+ package structure
     import neptune.new as neptune
-    from neptune.new.integrations.utils import verify_type, expect_not_an_experiment
+    from neptune.new.integrations.utils import expect_not_an_experiment, verify_type
 except ImportError:
     # neptune-client>=1.0.0 package structure
     import neptune
-    from neptune.integrations.utils import verify_type, expect_not_an_experiment
+    from neptune.integrations.utils import expect_not_an_experiment, verify_type
 
-INTEGRATION_VERSION_KEY = 'source_code/integrations/neptune-sacred'
+INTEGRATION_VERSION_KEY = "source_code/integrations/neptune-sacred"
 
 
 class NeptuneObserver(RunObserver):
@@ -88,7 +88,7 @@ class NeptuneObserver(RunObserver):
         https://app.neptune.ai/prince.canuma/sacred-integration/e/SAC-59/all
     """
 
-    def __init__(self, run, base_namespace='experiment'):
+    def __init__(self, run, base_namespace="experiment"):
         super(NeptuneObserver, self).__init__()
         expect_not_an_experiment(run)
         self._run = run
@@ -99,27 +99,26 @@ class NeptuneObserver(RunObserver):
         self._run[INTEGRATION_VERSION_KEY] = __version__
 
     def started_event(self, ex_info, command, host_info, start_time, config, meta_info, _id):
-        self._run['sys/name'] = ex_info['name']
-        self._run[self.base_namespace]['config'] = custom_flatten_dict(config)
-        self._run[self.base_namespace]['sacred_config/sacred_id'] = _id
-        self._run[self.base_namespace]['sacred_config/host_info'] = host_info
-        self._run[self.base_namespace]['sacred_config/meta_info'] = custom_flatten_dict(meta_info)
-        self._run[self.base_namespace]['sacred_config/experiment_info'] = custom_flatten_dict(ex_info)
+        self._run["sys/name"] = ex_info["name"]
+        self._run[self.base_namespace]["config"] = custom_flatten_dict(config)
+        self._run[self.base_namespace]["sacred_config/sacred_id"] = _id
+        self._run[self.base_namespace]["sacred_config/host_info"] = host_info
+        self._run[self.base_namespace]["sacred_config/meta_info"] = custom_flatten_dict(meta_info)
+        self._run[self.base_namespace]["sacred_config/experiment_info"] = custom_flatten_dict(ex_info)
 
     def completed_event(self, stop_time, result: dict):
         if result:
             for i, (k, v) in enumerate(result.items()):
                 if isinstance(v, str):
-                    self._run[self.base_namespace][f'metrics/results/{k}'] = v
+                    self._run[self.base_namespace][f"metrics/results/{k}"] = v
                 elif isinstance(v, int) or isinstance(v, float):
-                    self._run[self.base_namespace][f'metrics/results/{k}'] = float(v)
+                    self._run[self.base_namespace][f"metrics/results/{k}"] = float(v)
                 elif isinstance(v, list) or isinstance(v, dict):
-                    self._run[self.base_namespace][f'metrics/results/{k}'] = json.dumps(v)
+                    self._run[self.base_namespace][f"metrics/results/{k}"] = json.dumps(v)
                 elif isinstance(v, object):
-                    self._run[self.base_namespace][f'metrics/results/{k}'].upload(v)
+                    self._run[self.base_namespace][f"metrics/results/{k}"].upload(v)
                 else:
-                    warnings.warn(
-                        f"Logging results does not support type '{type(v)}' results. Ignoring this result")
+                    warnings.warn(f"Logging results does not support type '{type(v)}' results. Ignoring this result")
 
     def interrupted_event(self, interrupt_time, status):
         pass
@@ -129,20 +128,18 @@ class NeptuneObserver(RunObserver):
 
     def artifact_event(self, name, filename, metadata=None, content_type=None):
         filename = os.path.split(filename)[-1]
-        self._run[self.base_namespace][f'io_files/artifacts/{name}'].upload(filename)
+        self._run[self.base_namespace][f"io_files/artifacts/{name}"].upload(filename)
 
     def resource_event(self, filename):
         if filename not in self.resources:
             md5 = get_digest(filename)
             self.resources[filename] = md5
 
-        self._run[self.base_namespace]['io_files/resources'] = list(self.resources.items())
+        self._run[self.base_namespace]["io_files/resources"] = list(self.resources.items())
 
     def log_metrics(self, metrics_by_name, info):
         for metric_name, metric_ptr in metrics_by_name.items():
-            for step, value, timestamp in zip(
-                    metric_ptr["steps"],
-                    metric_ptr["values"],
-                    metric_ptr['timestamps']):
-                self._run[self.base_namespace][f'metrics/{metric_name}'].log(step=int(step), value=value,
-                                                                                  timestamp=timestamp.timestamp())
+            for step, value, timestamp in zip(metric_ptr["steps"], metric_ptr["values"], metric_ptr["timestamps"]):
+                self._run[self.base_namespace][f"metrics/{metric_name}"].log(
+                    step=int(step), value=value, timestamp=timestamp.timestamp()
+                )
