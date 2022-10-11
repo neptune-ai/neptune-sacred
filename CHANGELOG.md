@@ -3,6 +3,12 @@
 ### Changes
 - Moved `neptune_sacred` package to `src` directory ([#14](https://github.com/neptune-ai/neptune-sacred/pull/14))
 
+
+### Fixes
+- Fixed NeptuneObserver import error - now possible to directly import with `from neptune_sacred import NeptuneObserver`
+  ([#16](https://github.com/neptune-ai/neptune-sacred/pull/16))
+
+
 ## neptune-sacred 0.10.0
 
 ### Changes
