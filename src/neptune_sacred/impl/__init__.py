@@ -21,7 +21,6 @@ import warnings
 from sacred.dependencies import get_digest
 from sacred.observers import RunObserver
 
-from neptune_sacred import __version__
 from neptune_sacred.impl.utils import custom_flatten_dict
 
 try:
@@ -38,6 +37,10 @@ except ImportError:
         expect_not_an_experiment,
         verify_type,
     )
+
+from neptune_sacred._version import get_versions
+
+__version__ = get_versions()["version"]
 
 INTEGRATION_VERSION_KEY = "source_code/integrations/neptune-sacred"
 

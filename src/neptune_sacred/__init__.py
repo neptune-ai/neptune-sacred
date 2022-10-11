@@ -14,12 +14,7 @@
 # limitations under the License.
 #
 
-from neptune_sacred._version import get_versions
-
-__all__ = [
-    "__version__",
-]
-
-__version__ = get_versions()["version"]
-
-del get_versions
+from neptune_sacred.impl import (
+    NeptuneObserver,
+    __version__,
+)
