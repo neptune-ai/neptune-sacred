@@ -25,18 +25,10 @@ from neptune_sacred.impl.utils import custom_flatten_dict
 
 try:
     # neptune-client=0.9.0+ package structure
-    import neptune.new as neptune
-    from neptune.new.integrations.utils import (
-        expect_not_an_experiment,
-        verify_type,
-    )
+    from neptune.new.integrations.utils import expect_not_an_experiment
 except ImportError:
     # neptune-client>=1.0.0 package structure
-    import neptune
-    from neptune.integrations.utils import (
-        expect_not_an_experiment,
-        verify_type,
-    )
+    from neptune.integrations.utils import expect_not_an_experiment
 
 from neptune_sacred._version import get_versions
 
