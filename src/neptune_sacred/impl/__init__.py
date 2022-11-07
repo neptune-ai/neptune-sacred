@@ -30,9 +30,7 @@ except ImportError:
     # neptune-client>=1.0.0 package structure
     from neptune.integrations.utils import expect_not_an_experiment
 
-from neptune_sacred._version import get_versions
-
-__version__ = get_versions()["version"]
+from neptune_sacred.impl.version import __version__
 
 INTEGRATION_VERSION_KEY = "source_code/integrations/neptune-sacred"
 
