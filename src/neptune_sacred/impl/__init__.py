@@ -17,19 +17,15 @@
 import json
 import os
 import warnings
+from typing import Union
 
+from neptune.new.handler import Handler
+from neptune.new.metadata_containers import Run
+from neptune.new.utils import stringify_unsupported
 from sacred.dependencies import get_digest
 from sacred.observers import RunObserver
 
 from neptune_sacred.impl.utils import custom_flatten_dict
-
-try:
-    # neptune-client=0.9.0+ package structure
-    from neptune.new.integrations.utils import expect_not_an_experiment
-except ImportError:
-    # neptune-client>=1.0.0 package structure
-    from neptune.integrations.utils import expect_not_an_experiment
-
 from neptune_sacred.impl.version import __version__
 
 INTEGRATION_VERSION_KEY = "source_code/integrations/neptune-sacred"
@@ -42,8 +38,11 @@ class NeptuneObserver(RunObserver):
     The experiment data can be accessed and shared via web UI or experiment API.
 
     Args:
-        run(Run): Neptune _run.
-        base_namespace(str): The namespace to save all metadata from sacred.
+        run:
+            Pass a Neptune run or handler object if you want to continue logging to an existing run.
+            Learn more about resuming runs in the docs: https://docs.neptune.ai/logging/to_existing_object
+        base_namespace:
+            In the Neptune run, the root namespace that will contain all the logged metadata.
 
     Examples:
         Create sacred experiment:
@@ -55,9 +54,13 @@ class NeptuneObserver(RunObserver):
 
         Add Neptune observer:
 
-        >>> from neptunecontrib.monitoring.sacred import NeptuneObserver
-        >>> ex.observers.append(NeptuneObserver(api_token='YOUR_LONG_API_TOKEN',
-        ...                                     project_name='USER_NAME/PROJECT_NAME'))
+        >>> import neptune.new as neptune
+        >>> from neptune_sacred import NeptuneObserver
+        >>>
+        >>> run = neptune.init_run()
+        >>> ex.observers.append(
+        ...     NeptuneObserver(run=run)
+        ...     )
 
         Run experiment:
 
@@ -87,23 +90,38 @@ class NeptuneObserver(RunObserver):
         https://app.neptune.ai/prince.canuma/sacred-integration/e/SAC-59/all
     """
 
-    def __init__(self, run, base_namespace="experiment"):
+    def __init__(
+        self,
+        run: Union[Run, Handler],
+        *,
+        base_namespace="experiment",
+    ):
+
         super(NeptuneObserver, self).__init__()
-        expect_not_an_experiment(run)
+
         self._run = run
+
+        if isinstance(self._run, Handler):
+            self._root_object = self._run.get_root_object()
+        else:
+            self._root_object = self._run
 
         self.base_namespace = base_namespace
         self.resources = {}
 
-        self._run[INTEGRATION_VERSION_KEY] = __version__
+        self._root_object[INTEGRATION_VERSION_KEY] = __version__
 
     def started_event(self, ex_info, command, host_info, start_time, config, meta_info, _id):
-        self._run["sys/name"] = ex_info["name"]
-        self._run[self.base_namespace]["config"] = custom_flatten_dict(config)
+        self._root_object["sys/name"] = ex_info["name"]
+        self._run[self.base_namespace]["config"] = stringify_unsupported(custom_flatten_dict(config))
         self._run[self.base_namespace]["sacred_config/sacred_id"] = _id
         self._run[self.base_namespace]["sacred_config/host_info"] = host_info
-        self._run[self.base_namespace]["sacred_config/meta_info"] = custom_flatten_dict(meta_info)
-        self._run[self.base_namespace]["sacred_config/experiment_info"] = custom_flatten_dict(ex_info)
+        self._run[self.base_namespace]["sacred_config/meta_info"] = stringify_unsupported(
+            custom_flatten_dict(meta_info)
+        )
+        self._run[self.base_namespace]["sacred_config/experiment_info"] = stringify_unsupported(
+            custom_flatten_dict(ex_info)
+        )
 
     def completed_event(self, stop_time, result: dict):
         if result:
@@ -139,6 +157,6 @@ class NeptuneObserver(RunObserver):
     def log_metrics(self, metrics_by_name, info):
         for metric_name, metric_ptr in metrics_by_name.items():
             for step, value, timestamp in zip(metric_ptr["steps"], metric_ptr["values"], metric_ptr["timestamps"]):
-                self._run[self.base_namespace][f"metrics/{metric_name}"].log(
+                self._run[self.base_namespace][f"metrics/{metric_name}"].append(
                     step=int(step), value=value, timestamp=timestamp.timestamp()
                 )
