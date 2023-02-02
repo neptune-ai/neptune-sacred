@@ -32,15 +32,15 @@ INTEGRATION_VERSION_KEY = "source_code/integrations/neptune-sacred"
 
 
 class NeptuneObserver(RunObserver):
-    """Logs sacred experiment data to Neptune.
+    """Logs Sacred experiment metadata to Neptune.
 
-    Sacred observer that logs experiment metadata to neptune.
-    The experiment data can be accessed and shared via web UI or experiment API.
+    The experiment data can be accessed and shared via the web app or API.
 
     Args:
         run:
-            Pass a Neptune run or handler object if you want to continue logging to an existing run.
-            Learn more about resuming runs in the docs: https://docs.neptune.ai/logging/to_existing_object
+            Pass a Neptune run if you want to continue logging to an existing run.
+            Learn more about resuming runs: https://docs.neptune.ai/logging/to_existing_object
+            You can also pass a namespace handler instead of a run.
         base_namespace:
             In the Neptune run, the root namespace that will contain all the logged metadata.
 
@@ -50,17 +50,14 @@ class NeptuneObserver(RunObserver):
         >>> from numpy.random import permutation
         >>> from sklearn import svm, datasets
         >>> from sacred import Experiment
-        >>> ex = Experiment('iris_rbf_svm')
+        >>> ex = Experiment("iris_rbf_svm")
 
         Add Neptune observer:
 
         >>> import neptune.new as neptune
         >>> from neptune_sacred import NeptuneObserver
-        >>>
         >>> run = neptune.init_run()
-        >>> ex.observers.append(
-        ...     NeptuneObserver(run=run)
-        ...     )
+        >>> ex.observers.append(NeptuneObserver(run=run))
 
         Run experiment:
 
@@ -75,19 +72,16 @@ class NeptuneObserver(RunObserver):
         ...     per = permutation(iris.target.size)
         ...     iris.data = iris.data[per]
         ...     iris.target = iris.target[per]
-        ...     clf = svm.SVC(C, 'rbf', gamma=gamma)
-        ...     clf.fit(iris.data[:90],
-        ...             iris.target[:90])
-        ...     return clf.score(iris.data[90:],
-        ...                      iris.target[90:])
+        ...     clf = svm.SVC(C, "rbf", gamma=gamma)
+        ...     clf.fit(iris.data[:90], iris.target[:90])
+        ...     return clf.score(iris.data[90:], iris.target[90:])
 
+    You may also want to check the following:
 
-    You may also want to check `sacred integration docs page` and `example experiment page`_.
-
-    .. _sacred integration docs page:
-        https://docs.neptune.ai/integrations-and-supported-tools/model-training/sacred
-    .. _example experiment page:
-        https://app.neptune.ai/prince.canuma/sacred-integration/e/SAC-59/all
+    Sacred integration docs page:
+        https://docs.neptune.ai/integrations/sacred
+    Example run displayed in Neptune:
+        https://app.neptune.ai/o/common/org/sacred-integration/e/SAC-11/all
     """
 
     def __init__(
