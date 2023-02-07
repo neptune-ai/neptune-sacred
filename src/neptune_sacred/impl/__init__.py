@@ -109,7 +109,7 @@ class NeptuneObserver(RunObserver):
         self._root_object["sys/name"] = ex_info["name"]
         self._run[self.base_namespace]["config"] = stringify_unsupported(custom_flatten_dict(config))
         self._run[self.base_namespace]["sacred_config/sacred_id"] = str(_id)
-        self._run[self.base_namespace]["sacred_config/host_info"] = str(host_info)
+        self._run[self.base_namespace]["sacred_config/host_info"] = stringify_unsupported(host_info)
         self._run[self.base_namespace]["sacred_config/meta_info"] = stringify_unsupported(
             custom_flatten_dict(meta_info)
         )
