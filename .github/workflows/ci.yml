@@ -1,4 +1,4 @@
-name: neptune-prophet
+name: neptune-sacred
 on: [push]
 jobs:
   test:
