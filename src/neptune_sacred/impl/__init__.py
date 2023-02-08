@@ -81,7 +81,7 @@ class NeptuneObserver(RunObserver):
     Sacred integration docs page:
         https://docs.neptune.ai/integrations/sacred
     Example run displayed in Neptune:
-        https://app.neptune.ai/o/common/org/sacred-integration/e/SAC-11/all
+        https://app.neptune.ai/o/common/org/sacred-integration/e/SAC-1336/all
     """
 
     def __init__(
