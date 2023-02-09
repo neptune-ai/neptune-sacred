@@ -19,9 +19,17 @@ import os
 import warnings
 from typing import Union
 
-from neptune.new.handler import Handler
-from neptune.new.metadata_containers import Run
-from neptune.new.utils import stringify_unsupported
+try:
+    # neptune-client=0.9.0+ package structure
+    from neptune.new.handler import Handler
+    from neptune.new.metadata_containers import Run
+    from neptune.new.utils import stringify_unsupported
+except ImportError:
+    # neptune-client>=1.0.0 package structure
+    from neptune.handler import Handler
+    from neptune.metadata_containers import Run
+    from neptune.utils import stringify_unsupported
+
 from sacred.dependencies import get_digest
 from sacred.observers import RunObserver
 
