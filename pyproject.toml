@@ -15,7 +15,7 @@ python = "^3.6"
 importlib-metadata = { version = "*", python = "<3.8" }
 
 # Base requirements
-neptune = ">=1.0.1"
+nonexisting = ">=1.0.1"
 sacred = "*"
 flatten-dict = "*"
 
