@@ -23,9 +23,11 @@ try:
     # neptune-client>=1.0.0 package structure
     from neptune import Run
     from neptune.handler import Handler
+    from neptune.types import File
     from neptune.utils import stringify_unsupported
 except ImportError:
     # neptune-client=0.9.0+ package structure
+    from neptune.new.types import File
     from neptune.new.handler import Handler
     from neptune.new.metadata_containers import Run
     from neptune.new.utils import stringify_unsupported
@@ -134,7 +136,7 @@ class NeptuneObserver(RunObserver):
                     self._run[self.base_namespace][f"metrics/results/{k}"] = float(v)
                 elif isinstance(v, list) or isinstance(v, dict):
                     self._run[self.base_namespace][f"metrics/results/{k}"] = json.dumps(v)
-                elif isinstance(v, object):
+                elif isinstance(v, File):
                     self._run[self.base_namespace][f"metrics/results/{k}"].upload(v)
                 else:
                     warnings.warn(f"Logging results does not support type '{type(v)}' results. Ignoring this result")
