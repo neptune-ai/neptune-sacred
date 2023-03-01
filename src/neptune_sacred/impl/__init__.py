@@ -13,22 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from __future__ import annotations
 
 import json
 import os
 import warnings
-from typing import Union
 
 try:
+    # neptune-client>=1.0.0 package structure
+    from neptune import Run
+    from neptune.handler import Handler
+    from neptune.utils import stringify_unsupported
+except ImportError:
     # neptune-client=0.9.0+ package structure
     from neptune.new.handler import Handler
     from neptune.new.metadata_containers import Run
     from neptune.new.utils import stringify_unsupported
-except ImportError:
-    # neptune-client>=1.0.0 package structure
-    from neptune.handler import Handler
-    from neptune.metadata_containers import Run
-    from neptune.utils import stringify_unsupported
 
 from sacred.dependencies import get_digest
 from sacred.observers import RunObserver
@@ -62,7 +62,7 @@ class NeptuneObserver(RunObserver):
 
         Add Neptune observer:
 
-        >>> import neptune.new as neptune
+        >>> import neptune
         >>> from neptune_sacred import NeptuneObserver
         >>> run = neptune.init_run()
         >>> ex.observers.append(NeptuneObserver(run=run))
@@ -94,7 +94,7 @@ class NeptuneObserver(RunObserver):
 
     def __init__(
         self,
-        run: Union[Run, Handler],
+        run: Run | Handler,
         *,
         base_namespace="experiment",
     ):
