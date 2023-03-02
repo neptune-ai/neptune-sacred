@@ -29,13 +29,14 @@ Neptune is a tool used for experiment tracking, model registry, data versioning,
 
 ## Example
 
-```shell
-# On the command line:
-pip install neptune-client[sacred] sacred torch torchvision
 ```
+# On the command line:
+pip install neptune-sacred
+```
+
 ```python
 # In Python:
-import neptune.new as neptune
+import neptune
 
 # Start a run
 run = neptune.init_run(
