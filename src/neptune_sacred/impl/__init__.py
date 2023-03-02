@@ -19,19 +19,10 @@ import json
 import os
 import warnings
 
-try:
-    # neptune-client>=1.0.0 package structure
-    from neptune import Run
-    from neptune.handler import Handler
-    from neptune.types import File
-    from neptune.utils import stringify_unsupported
-except ImportError:
-    # neptune-client=0.9.0+ package structure
-    from neptune.new.types import File
-    from neptune.new.handler import Handler
-    from neptune.new.metadata_containers import Run
-    from neptune.new.utils import stringify_unsupported
-
+from neptune import Run
+from neptune.handler import Handler
+from neptune.types import File
+from neptune.utils import stringify_unsupported
 from sacred.dependencies import get_digest
 from sacred.observers import RunObserver
 
