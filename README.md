@@ -29,13 +29,15 @@ Neptune is a tool used for experiment tracking, model registry, data versioning,
 
 ## Example
 
+On the command line:
+
 ```
-# On the command line:
 pip install neptune-sacred
 ```
 
+In Python:
+
 ```python
-# In Python:
 import neptune
 
 # Start a run
