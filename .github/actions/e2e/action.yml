@@ -12,7 +12,7 @@ runs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          repository: neptune-ai/neptune-prophet
+          repository: neptune-ai/neptune-sacred
           path: ${{ inputs.working_directory }}
 
       - name: Install dependencies
