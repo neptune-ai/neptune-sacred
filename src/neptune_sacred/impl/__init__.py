@@ -58,7 +58,8 @@ class NeptuneObserver(RunObserver):
 
         >>> import neptune
         >>> from neptune_sacred import NeptuneObserver
-        >>> run = neptune.init_run()
+        >>> run = neptune.init_run()  #doctest:+ELLIPSIS
+        https://app.neptune.ai...
         >>> ex.observers.append(NeptuneObserver(run=run))
 
         Run experiment:
