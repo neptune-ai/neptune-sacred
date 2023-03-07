@@ -21,6 +21,7 @@ import warnings
 
 from neptune import Run
 from neptune.handler import Handler
+from neptune.integrations.utils import expect_not_an_experiment
 from neptune.types import File
 from neptune.utils import stringify_unsupported
 from sacred.dependencies import get_digest
@@ -93,6 +94,7 @@ class NeptuneObserver(RunObserver):
     ):
 
         super(NeptuneObserver, self).__init__()
+        expect_not_an_experiment(run)
 
         self._run = run
 
