@@ -36,54 +36,36 @@ INTEGRATION_VERSION_KEY = "source_code/integrations/neptune-sacred"
 class NeptuneObserver(RunObserver):
     """Logs Sacred experiment metadata to Neptune.
 
-    The experiment data can be accessed and shared via the web app or API.
+    You can access and share the experiment data via the web app or API.
 
     Args:
-        run:
-            Pass a Neptune run if you want to continue logging to an existing run.
-            Learn more about resuming runs: https://docs.neptune.ai/logging/to_existing_object
-            You can also pass a namespace handler instead of a run.
-        base_namespace:
-            In the Neptune run, the root namespace that will contain all the logged metadata.
+        run: Neptune run object. You can also pass a namespace handler object;
+            for example, run["test"], in which case all metadata is logged under
+            the "test" namespace inside the run.
+        base_namespace: Root namespace where all the Sacred metadata is stored.
 
-    Examples:
-        Create sacred experiment:
+    Example:
+        from sacred import Experiment
+        import neptune
+        from neptune.integrations.sacred import NeptuneObserver
 
-        >>> from numpy.random import permutation
-        >>> from sklearn import svm, datasets
-        >>> from sacred import Experiment
-        >>> ex = Experiment("iris_rbf_svm")
+        neptune_run = neptune.init_run()
+        ex = Experiment("image_classification")
+        ex.observers.append(NeptuneObserver(run=neptune_run))
 
-        Add Neptune observer:
+        @ex.config
+        def cfg():
+            ...
 
-        >>> import neptune
-        >>> from neptune_sacred import NeptuneObserver
-        >>> run = neptune.init_run()
-        >>> ex.observers.append(NeptuneObserver(run=run))
+        @ex.main
+        def _run(...):
+            ...
+        
+        ex.run()
 
-        Run experiment:
-
-        >>> @ex.config
-        ... def cfg():
-        ...     C = 1.0
-        ...     gamma = 0.7
-
-        >>> @ex.automain
-        ... def _run(C, gamma, _run):
-        ...     iris = datasets.load_iris()
-        ...     per = permutation(iris.target.size)
-        ...     iris.data = iris.data[per]
-        ...     iris.target = iris.target[per]
-        ...     clf = svm.SVC(C, "rbf", gamma=gamma)
-        ...     clf.fit(iris.data[:90], iris.target[:90])
-        ...     return clf.score(iris.data[90:], iris.target[90:])
-
-    You may also want to check the following:
-
-    Sacred integration docs page:
-        https://docs.neptune.ai/integrations/sacred
-    Example run displayed in Neptune:
-        https://app.neptune.ai/o/common/org/sacred-integration/e/SAC-1341/all
+    For more, see the docs:
+        Tutorial: https://docs.neptune.ai/integrations/sacred/
+        API reference: https://docs.neptune.ai/api/integrations/sacred/
     """
 
     def __init__(
