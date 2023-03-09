@@ -13,23 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from __future__ import annotations
 
 import json
 import os
 import warnings
 
+from neptune import Run
+from neptune.handler import Handler
+from neptune.integrations.utils import expect_not_an_experiment
+from neptune.types import File
+from neptune.utils import stringify_unsupported
 from sacred.dependencies import get_digest
 from sacred.observers import RunObserver
 
 from neptune_sacred.impl.utils import custom_flatten_dict
-
-try:
-    # neptune-client=0.9.0+ package structure
-    from neptune.new.integrations.utils import expect_not_an_experiment
-except ImportError:
-    # neptune-client>=1.0.0 package structure
-    from neptune.integrations.utils import expect_not_an_experiment
-
 from neptune_sacred.impl.version import __version__
 
 INTEGRATION_VERSION_KEY = "source_code/integrations/neptune-sacred"
@@ -70,23 +68,39 @@ class NeptuneObserver(RunObserver):
         API reference: https://docs.neptune.ai/api/integrations/sacred/
     """
 
-    def __init__(self, run, base_namespace="experiment"):
+    def __init__(
+        self,
+        run: Run | Handler,
+        *,
+        base_namespace="experiment",
+    ):
+
         super(NeptuneObserver, self).__init__()
         expect_not_an_experiment(run)
+
         self._run = run
+
+        if isinstance(self._run, Handler):
+            self._root_object = self._run.get_root_object()
+        else:
+            self._root_object = self._run
 
         self.base_namespace = base_namespace
         self.resources = {}
 
-        self._run[INTEGRATION_VERSION_KEY] = __version__
+        self._root_object[INTEGRATION_VERSION_KEY] = __version__
 
     def started_event(self, ex_info, command, host_info, start_time, config, meta_info, _id):
-        self._run["sys/name"] = ex_info["name"]
-        self._run[self.base_namespace]["config"] = custom_flatten_dict(config)
-        self._run[self.base_namespace]["sacred_config/sacred_id"] = _id
-        self._run[self.base_namespace]["sacred_config/host_info"] = host_info
-        self._run[self.base_namespace]["sacred_config/meta_info"] = custom_flatten_dict(meta_info)
-        self._run[self.base_namespace]["sacred_config/experiment_info"] = custom_flatten_dict(ex_info)
+        self._root_object["sys/name"] = ex_info["name"]
+        self._run[self.base_namespace]["config"] = stringify_unsupported(custom_flatten_dict(config))
+        self._run[self.base_namespace]["sacred_config/sacred_id"] = str(_id)
+        self._run[self.base_namespace]["sacred_config/host_info"] = stringify_unsupported(host_info)
+        self._run[self.base_namespace]["sacred_config/meta_info"] = stringify_unsupported(
+            custom_flatten_dict(meta_info)
+        )
+        self._run[self.base_namespace]["sacred_config/experiment_info"] = stringify_unsupported(
+            custom_flatten_dict(ex_info)
+        )
 
     def completed_event(self, stop_time, result: dict):
         if result:
@@ -97,7 +111,7 @@ class NeptuneObserver(RunObserver):
                     self._run[self.base_namespace][f"metrics/results/{k}"] = float(v)
                 elif isinstance(v, list) or isinstance(v, dict):
                     self._run[self.base_namespace][f"metrics/results/{k}"] = json.dumps(v)
-                elif isinstance(v, object):
+                elif isinstance(v, File):
                     self._run[self.base_namespace][f"metrics/results/{k}"].upload(v)
                 else:
                     warnings.warn(f"Logging results does not support type '{type(v)}' results. Ignoring this result")
@@ -122,6 +136,6 @@ class NeptuneObserver(RunObserver):
     def log_metrics(self, metrics_by_name, info):
         for metric_name, metric_ptr in metrics_by_name.items():
             for step, value, timestamp in zip(metric_ptr["steps"], metric_ptr["values"], metric_ptr["timestamps"]):
-                self._run[self.base_namespace][f"metrics/{metric_name}"].log(
+                self._run[self.base_namespace][f"metrics/{metric_name}"].append(
                     step=int(step), value=value, timestamp=timestamp.timestamp()
                 )
