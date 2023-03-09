@@ -60,7 +60,7 @@ class NeptuneObserver(RunObserver):
         @ex.main
         def _run(...):
             ...
-        
+
         ex.run()
 
     For more, see the docs:
