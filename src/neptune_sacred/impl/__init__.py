@@ -19,11 +19,19 @@ import json
 import os
 import warnings
 
-from neptune import Run
-from neptune.handler import Handler
-from neptune.integrations.utils import expect_not_an_experiment
-from neptune.types import File
-from neptune.utils import stringify_unsupported
+try:
+    from neptune import Run
+    from neptune.handler import Handler
+    from neptune.integrations.utils import expect_not_an_experiment
+    from neptune.types import File
+    from neptune.utils import stringify_unsupported
+except ImportError:
+    from neptune.new.metadata_containers import Run
+    from neptune.new.handler import Handler
+    from neptune.new.integrations.utils import expect_not_an_experiment
+    from neptune.new.types import File
+    from neptune.new.utils import stringify_unsupported
+
 from sacred.dependencies import get_digest
 from sacred.observers import RunObserver
 
