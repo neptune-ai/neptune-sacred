@@ -1,8 +1,8 @@
-## [UNRELEASED] neptune-sacred 1.0.0
+## neptune-sacred 1.0.0
 
 ### Changes
 - Updated integration to be compatible with `neptune` `1.0.0`. ([#20](https://github.com/neptune-ai/neptune-sacred/pull/20))
-
+- Removed `neptune` and `neptune-client` from base requirements  ([#20](https://github.com/neptune-ai/neptune-sacred/pull/20))
 ## neptune-sacred 0.10.1
 
 ### Changes
