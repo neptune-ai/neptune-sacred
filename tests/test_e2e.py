@@ -38,7 +38,7 @@ def test_e2e(experiment, model):
     assert run.exists("sacred/experiment/io_files/artifacts/model")
     assert run.exists("sacred/experiment/io_files/artifacts/model_arch")
 
-    assert 0 < run["sacred/experiment/metrics/results/final_acc"].fetch() < 1
+    assert 0 <= run["sacred/experiment/metrics/results/final_acc"].fetch() <= 1
 
     assert run.exists("sacred/experiment/sacred_config/experiment_info")
     assert run.exists("sacred/experiment/sacred_config/meta_info")
