@@ -16,7 +16,6 @@
 from __future__ import annotations
 
 import json
-import os
 import warnings
 
 try:
@@ -131,7 +130,6 @@ class NeptuneObserver(RunObserver):
         pass
 
     def artifact_event(self, name, filename, metadata=None, content_type=None):
-        filename = os.path.split(filename)[-1]
         self._run[self.base_namespace][f"io_files/artifacts/{name}"].upload(filename)
 
     def resource_event(self, filename):
