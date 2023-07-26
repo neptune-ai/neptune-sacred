@@ -1,3 +1,8 @@
+## neptune-sacred 1.0.1
+
+### Fixes
+- Fixed file upload if full path is used and file is not in CWD ([#25](https://github.com/neptune-ai/neptune-sacred/pull/25))
+
 ## neptune-sacred 1.0.0
 
 ### Changes
