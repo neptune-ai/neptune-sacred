@@ -2,7 +2,7 @@
 
 Neptune is a lightweight experiment tracker that offers a single place to track, compare, store, and collaborate on experiments and models.
 
-This integration lets you use it as a UI (front end) for the experiments you track in Sacred.
+This integration lets you use Neptune as a UI for the experiments you track in Sacred.
 
 ## What will you get with this integration?
 
