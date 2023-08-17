@@ -1,12 +1,15 @@
 # Neptune + Sacred Integration
 
-Neptune is a tool used for experiment tracking, model registry, data versioning, and live model monitoring. This integration lets you use it as a UI (frontend) for the experiments you track in Sacred.
+Neptune is a lightweight experiment tracker that offers a single place to track, compare, store, and collaborate on experiments and models.
+
+This integration lets you use Neptune as a UI for the experiments you track in Sacred.
 
 ## What will you get with this integration?
 
-* Log, display, organize, and compare ML experiments in a single place
-* Version, store, manage, and query trained models, and model building metadata
-* Record and monitor model training, evaluation, or production runs live
+* Log, organize, visualize, and compare ML experiments in a single place
+* Monitor model training live
+* Version and query production-ready models and associated metadata (e.g., datasets)
+* Collaborate with the team and across the organization
 
 ## What will be logged to Neptune?
 
@@ -17,8 +20,7 @@ Neptune is a tool used for experiment tracking, model registry, data versioning,
 * Model configuration
 * [Other metadata](https://docs.neptune.ai/logging/what_you_can_log)
 
-![image](https://user-images.githubusercontent.com/97611089/160633857-48aa87ac-fcab-4225-8172-05aba159feaf.png)
-*Example custom dashboard in the Neptune app*
+![image](https://docs.neptune.ai/img/app/integrations/sacred.png)
 
 ## Resources
 
