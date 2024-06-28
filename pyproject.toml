@@ -34,6 +34,7 @@ dev = [
     "pytest-cov",
     "torch",
     "torchvision",
+    "numpy",
 ]
 
 [tool.poetry]
