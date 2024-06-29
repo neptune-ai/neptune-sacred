@@ -25,7 +25,7 @@ pytest-cov = { version = "2.10.1", optional = true }
 torch = { version = "1.13.0", optional = true }
 torchvision = {version = "*", optional = true }
 neptune = { version = ">=1.0.0", optional = true }
-
+numpy = { version = "<2.0", optional = true }
 
 [tool.poetry.extras]
 dev = [
@@ -34,6 +34,7 @@ dev = [
     "pytest-cov",
     "torch",
     "torchvision",
+    "numpy",
 ]
 
 [tool.poetry]
@@ -48,7 +49,7 @@ name = "neptune-sacred"
 readme = "README.md"
 version = "0.0.0"
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
@@ -79,7 +80,7 @@ packages = [
 
 [tool.black]
 line-length = 120
-target-version = ['py37', 'py38', 'py39', 'py310']
+target-version = ['py37', 'py38', 'py39', 'py310', 'py311']
 include = '\.pyi?$'
 exclude = '''
 /(
